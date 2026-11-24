@@ -79,5 +79,6 @@ const frame = game.render() // frame.color is one number per pixel; frame.bytes 
 | `roll()` | A barrel roll |
 | `nextView()`, `setView(name)` | Change view. The camera slides there |
 | `toggleSpread()` | Pull the slices of the stack apart, or put them back |
+| `toggleInvert()`, `inverted` | Swap up and down on the keys and the pointer, as with a plane's stick, and read whether they are swapped. `createGame({ invert: true })` starts swapped |
 | `view`, `chaseAmount`, `cockpitAmount`, `viewRoll`, `time`, `boost` | Read-only: where the camera is, and how the flight is going |
 | `world`, `model`, `craft`, `camera`, `frame` | The game's own objects, to read |

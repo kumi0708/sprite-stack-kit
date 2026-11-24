@@ -21,7 +21,8 @@
         cursor: crosshair;
       }
       #hint,
-      #view {
+      #view,
+      #invert {
         position: fixed;
         font: 11px/1.2 ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
         letter-spacing: 0.1em;
@@ -46,18 +47,28 @@
         left: 76px;
         right: 76px;
       }
-      #view {
+      #view,
+      #invert {
         top: 12px;
         right: 12px;
         padding: 8px 12px;
         border: 0;
         cursor: pointer;
       }
+      /* the up/down switch sits under the view button */
+      #invert {
+        top: 48px;
+      }
+      #invert[aria-pressed='true'] {
+        color: rgb(255, 214, 120);
+        background: rgba(120, 40, 20, 0.78);
+      }
     </style>
   </head>
   <body>
     <canvas id="game"></canvas>
     <button id="view" type="button">VIEW</button>
+    <button id="invert" type="button" aria-pressed="false">INVERT: OFF</button>
     <div id="hint"></div>
     <!-- Opened straight from disk, a browser refuses to load the game's modules and the page stays blank. -->
     <script>

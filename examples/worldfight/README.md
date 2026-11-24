@@ -6,7 +6,7 @@ Fly a rocket ship over the whole Earth, drop down to the United States and then 
 bun scripts/serve.mjs examples/worldfight
 ```
 
-Add `?level=2` to the address to start in the city, `?view=chase` or `?view=cockpit` to start from behind or from the seat, and `?assist` to have missiles leave by themselves once locked (touch screens always do).
+Add `?level=2` to the address to start in the city, `?view=chase` or `?view=cockpit` to start from behind or from the seat, `?invert=1` to start with up and down swapped, and `?assist` to have missiles leave by themselves once locked (touch screens always do).
 
 | Do | Mouse or touch | Keys |
 | --- | --- | --- |
@@ -19,6 +19,7 @@ Add `?level=2` to the address to start in the city, `?view=chase` or `?view=cock
 | Go down a level, over a beam of light | DOWN | Enter |
 | Go up a level | UP | Backspace |
 | Sound off and on | | M |
+| Swap up and down, as with a plane's stick: S or pointing low climbs | INVERT | I |
 
 Flying out of the side of a country also takes you up a level. In the middle of a fight the edge of the city turns the plane back; leave with UP.
 

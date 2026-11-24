@@ -10,9 +10,10 @@ import { groundAt } from './src/world.js'
 
 /**
  * Every walk starts from a fresh game like this. A small picture and 30 frames a second
- * keep the walk quick; the game moves the same at any frame rate.
+ * keep the walk quick; the game moves the same at any frame rate. At 96 × 60 a diving craft
+ * slipped off the bottom edge in the view from above, so the picture is a little bigger.
  */
-export const start = { seed: 7, width: 96, height: 60, framesPerSecond: 30 }
+export const start = { seed: 7, width: 120, height: 72, framesPerSecond: 30 }
 
 /**
  * What the player can do. Each is followed by one frame of the game. `notes` starts empty on
@@ -34,7 +35,19 @@ export const events = {
     game.release()
     notes.held = false
   },
-  'you turn right with the keys': (game) => game.setKeys(1, 0, false),
+  'you turn right with the keys': (game, notes) => {
+    game.setKeys(1, 0, false)
+    notes.upKey = false
+  },
+  'you hold the up key': (game, notes) => {
+    game.setKeys(0, 1, false)
+    notes.upKey = true
+    notes.from = game.craft.z
+  },
+  'you press I to swap up and down': (game, notes) => {
+    game.toggleInvert()
+    notes.from = game.craft.z // the dragon now heads the other way from here
+  },
   'you press E': (game, notes) => {
     game.toggleSpread()
     notes.apart = !notes.apart
@@ -61,6 +74,8 @@ export function state(game, notes) {
     button: notes.held ? 'held' : 'up',
     thrusters: game.boost > 0.5 ? 'open' : 'closed',
     stack: apart === !!notes.apart ? (apart ? 'apart' : 'solid') : apart ? 'closing' : 'opening',
+    controls: game.inverted ? 'up and down swapped' : 'normal',
+    upKey: notes.upKey ? 'held' : 'up',
   }
 }
 
@@ -121,6 +136,18 @@ export const rules = [
       const outline = count(frame, game.model.outline)
       if (s.view === 'cockpit') return outline === 0 ? '' : `${outline} pixels of the craft's outline show in the cockpit`
       return outline > 8 ? '' : `only ${outline} pixels of the craft's outline show`
+    },
+  },
+  {
+    name: 'holding the up key climbs, or dives when up and down are swapped',
+    after: 'everything settles',
+    check: (game, frame, s, notes) => {
+      if (!notes.upKey) return ''
+      const z = game.craft.z
+      const moved = z - notes.from
+      const ground = groundAt(game.world, game.craft.x, game.craft.y)
+      if (game.inverted) return moved < -3 || z - ground < 20 ? '' : `it went ${moved.toFixed(1)} px, from ${notes.from.toFixed(1)}, instead of down`
+      return moved > 3 || z > 225 ? '' : `it went ${moved.toFixed(1)} px, from ${notes.from.toFixed(1)}, instead of up`
     },
   },
   {

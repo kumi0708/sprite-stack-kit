@@ -69,6 +69,15 @@
         user-select: none;
         -webkit-user-select: none;
       }
+      /* the up/down switch sits at the bottom of the column; it stands out while it is on */
+      #invert {
+        top: 156px;
+        white-space: pre;
+      }
+      #invert[aria-pressed='true'] {
+        color: rgb(255, 214, 120);
+        background: rgba(120, 40, 20, 0.78);
+      }
       button[hidden] {
         display: none;
       }
@@ -81,6 +90,8 @@
     <button id="up" type="button">UP</button>
     <button id="missile" type="button" hidden>MSL</button>
     <button id="boost" type="button" hidden>BOOST</button>
+    <button id="invert" type="button" aria-pressed="false">INVERT
+OFF</button>
     <div id="hint"></div>
     <!-- Opened straight from disk, a browser refuses to load the game's modules and the page stays blank. -->
     <script>

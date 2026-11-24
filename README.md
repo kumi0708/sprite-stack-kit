@@ -173,8 +173,9 @@ Open the address it prints (normally `http://localhost:5173`) and fly.
 | Shift | Thrusters |
 | Space, or the VIEW button | The next view: overhead, chase, cockpit |
 | E | Pull the stack apart to see the slices |
+| I, or the INVERT button | Swap up and down, as with a plane's stick: S or pointing low climbs. The button turns red while it is on, and the browser remembers it |
 
-Add `?seed=3` to the address for a different world. Add `?view=chase` or `?view=cockpit` to start in that view.
+Add `?seed=3` to the address for a different world. Add `?view=chase` or `?view=cockpit` to start in that view. Add `?invert=1` or `?invert=0` to start with up and down swapped, or not.
 
 ## Pick a path
 

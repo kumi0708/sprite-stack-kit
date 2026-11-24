@@ -3,15 +3,26 @@
 import { createGame } from './game.js'
 import { createSound } from './sound.js'
 
-// ?seed=3 moves the fine detail, ?view=chase starts from behind, ?level=2 starts in the city
+// ?seed=3 moves the fine detail, ?view=chase starts from behind, ?level=2 starts in the city,
+// and ?invert=1 or ?invert=0 turns the up/down swap on or off. Otherwise the swap is as the
+// player last left it on this browser.
 const query = new URLSearchParams(location.search)
 const touch = matchMedia('(pointer: coarse)').matches
+const SAVED = 'worldfight-invert'
+const remembered = (() => {
+  try {
+    return localStorage.getItem(SAVED) === '1'
+  } catch {
+    return false
+  }
+})()
 const game = createGame({
   seed: Number(query.get('seed')) || 7,
   view: query.get('view') ?? 'top',
   level: Number(query.get('level')) || 0,
   // on a touch screen a missile leaves by itself once it has a lock, so one finger can play
   assist: touch || query.has('assist'),
+  invert: query.has('invert') ? query.get('invert') === '1' : remembered,
 })
 const sound = createSound()
 const canvas = document.getElementById('game')
@@ -21,15 +32,36 @@ const downButton = document.getElementById('down')
 const upButton = document.getElementById('up')
 const missileButton = document.getElementById('missile')
 const boostButton = document.getElementById('boost')
+const invertButton = document.getElementById('invert')
 
-const STEER = touch ? 'DRAG TO STEER · HOLD FOR THRUSTERS · TAP TO ROLL' : 'POINT OR A/D TO STEER · W/S TO CLIMB · HOLD OR SHIFT FOR THRUSTERS · CLICK OR R TO ROLL · SPACE FOR VIEW'
-const HINTS = [
-  `${STEER} · FLY TO THE USA BEAM, THEN ${touch ? 'DOWN' : 'ENTER'}`,
-  `${STEER} · FLY TO THE SF BEAM, THEN ${touch ? 'DOWN' : 'ENTER'} · ${touch ? 'UP' : 'BACKSPACE'} FOR THE EARTH`,
+// What moves the ship up and down, in words, for the hints: it depends on the up/down swap.
+const steer = (inverted) =>
+  touch
+    ? 'DRAG TO STEER · HOLD FOR THRUSTERS · TAP TO ROLL'
+    : `POINT OR A/D TO STEER · ${inverted ? 'S TO CLIMB, W TO DIVE' : 'W TO CLIMB, S TO DIVE'} · HOLD OR SHIFT FOR THRUSTERS · CLICK OR R TO ROLL · SPACE FOR VIEW · I TO SWAP UP AND DOWN`
+const hints = (inverted) => [
+  `${steer(inverted)} · FLY TO THE USA BEAM, THEN ${touch ? 'DOWN' : 'ENTER'}`,
+  `${steer(inverted)} · FLY TO THE SF BEAM, THEN ${touch ? 'DOWN' : 'ENTER'} · ${touch ? 'UP' : 'BACKSPACE'} FOR THE EARTH`,
   touch
     ? 'DRAG TO STEER · HOLD TO FIRE · TAP TO ROLL OUT OF A MISSILE\'S WAY · MISSILES FIRE WHEN LOCKED · UP TO LEAVE'
-    : 'POINT OR A/D TO STEER · HOLD OR F: CANNON · E OR RIGHT CLICK: MISSILE ONCE LOCKED · CLICK OR R: ROLL OUT OF A MISSILE\'S WAY · SHIFT: THRUSTERS · SPACE: VIEW · M: SOUND · BACKSPACE: LEAVE',
+    : `POINT OR A/D TO STEER · ${inverted ? 'S: CLIMB, W: DIVE' : 'W: CLIMB, S: DIVE'} · HOLD OR F: CANNON · E OR RIGHT CLICK: MISSILE ONCE LOCKED · CLICK OR R: ROLL OUT OF A MISSILE'S WAY · SHIFT: THRUSTERS · SPACE: VIEW · M: SOUND · I: SWAP UP AND DOWN · BACKSPACE: LEAVE`,
 ]
+let HINTS = hints(game.inverted)
+
+/** Shows the up/down swap on its button and in the hints, and remembers it on this browser. */
+function showInvert() {
+  invertButton.textContent = game.inverted ? 'INVERT\nON' : 'INVERT\nOFF'
+  invertButton.setAttribute('aria-pressed', String(game.inverted))
+  HINTS = hints(game.inverted)
+  shown = '' // the hint is redrawn on the next frame
+  try {
+    localStorage.setItem(SAVED, game.inverted ? '1' : '0')
+  } catch {}
+}
+function toggleInvert() {
+  game.toggleInvert()
+  showInvert()
+}
 
 let pixel = 3 // screen pixels per game pixel
 let image = null
@@ -102,6 +134,7 @@ button('view', () => game.nextView())
 button('down', () => game.descend())
 button('up', () => game.ascend())
 button('missile', () => game.missile())
+button('invert', toggleInvert)
 // BOOST is held, not clicked
 boostButton.addEventListener('pointerdown', (e) => {
   sound.start()
@@ -135,6 +168,7 @@ const ONCE = {
   KeyQ: () => game.roll(),
   KeyE: () => game.missile(),
   KeyM: () => sound.toggle(),
+  KeyI: () => toggleInvert(),
 }
 addEventListener('keydown', (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey) return
@@ -160,5 +194,6 @@ addEventListener('blur', () => {
 })
 addEventListener('resize', fit)
 
+showInvert()
 fit()
 requestAnimationFrame(tick)

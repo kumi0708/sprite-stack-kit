@@ -17,6 +17,7 @@
 | Go down a level, over a marked place | DOWN button | Enter |
 | Go up a level | UP button | Backspace |
 | Sound off and on | | M |
+| Swap up and down, as with a plane's stick: S or pointing low climbs | INVERT | I |
 
 On a touch screen a missile leaves by itself once it has a lock, so the fight can be played with one finger: drag to steer, hold to fire, tap to roll.
 

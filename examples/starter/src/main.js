@@ -2,29 +2,61 @@
 
 import { createGame } from './game.js'
 
-// ?seed=3 picks the world, and ?view=chase or ?view=cockpit picks the view to start in
+// ?seed=3 picks the world, ?view=chase or ?view=cockpit picks the view to start in, and
+// ?invert=1 or ?invert=0 turns the up/down swap on or off. Otherwise the swap is as the
+// player last left it on this browser.
 const query = new URLSearchParams(location.search)
+const SAVED = 'starter-invert'
+const remembered = (() => {
+  try {
+    return localStorage.getItem(SAVED) === '1'
+  } catch {
+    return false
+  }
+})()
 const game = createGame({
   seed: Number(query.get('seed')) || 7,
   view: query.get('view') ?? 'top',
+  invert: query.has('invert') ? query.get('invert') === '1' : remembered,
 })
 const canvas = document.getElementById('game')
 const ctx = canvas.getContext('2d')
 const hint = document.getElementById('hint')
 const viewButton = document.getElementById('view')
+const invertButton = document.getElementById('invert')
 
 const touch = matchMedia('(pointer: coarse)').matches
-const HINTS = touch
-  ? {
-      top: 'DRAG TO STEER · TAP TO ROLL · HOLD FOR THRUSTERS · VIEW FOR THE CHASE VIEW',
-      chase: 'DRAG TO STEER AND CLIMB · TAP TO ROLL · HOLD FOR THRUSTERS · VIEW FOR THE COCKPIT',
-      cockpit: 'DRAG TO STEER AND CLIMB · VIEW FOR THE OVERHEAD VIEW',
-    }
-  : {
-      top: 'MOVE TO STEER · CLICK TO ROLL · HOLD FOR THRUSTERS · W/S TO CLIMB AND DIVE · SPACE FOR CHASE VIEW · E TO PULL THE STACK APART',
-      chase: 'POINT TO STEER AND CLIMB · CLICK TO ROLL · HOLD FOR THRUSTERS · SPACE FOR THE COCKPIT',
-      cockpit: 'POINT TO STEER AND CLIMB · CLICK TO ROLL · HOLD FOR THRUSTERS · SPACE FOR OVERHEAD VIEW',
-    }
+// What moves the craft up and down, in words, for the hints: it depends on the up/down swap.
+const climbWords = (inverted) => (touch ? (inverted ? 'DRAG DOWN TO CLIMB' : 'DRAG UP TO CLIMB') : inverted ? 'S TO CLIMB, W TO DIVE' : 'W TO CLIMB, S TO DIVE')
+const pointWords = (inverted) => (inverted ? 'POINT LOW TO CLIMB' : 'POINT HIGH TO CLIMB')
+const hints = (inverted) =>
+  touch
+    ? {
+        top: 'DRAG TO STEER · TAP TO ROLL · HOLD FOR THRUSTERS · VIEW FOR THE CHASE VIEW',
+        chase: `DRAG TO STEER · ${climbWords(inverted)} · TAP TO ROLL · HOLD FOR THRUSTERS · VIEW FOR THE COCKPIT`,
+        cockpit: `DRAG TO STEER · ${climbWords(inverted)} · VIEW FOR THE OVERHEAD VIEW`,
+      }
+    : {
+        top: `MOVE TO STEER · CLICK TO ROLL · HOLD FOR THRUSTERS · ${climbWords(inverted)} · SPACE FOR CHASE VIEW · E TO PULL THE STACK APART · I TO SWAP UP AND DOWN`,
+        chase: `POINT TO STEER · ${pointWords(inverted)} · CLICK TO ROLL · HOLD FOR THRUSTERS · SPACE FOR THE COCKPIT · I TO SWAP UP AND DOWN`,
+        cockpit: `POINT TO STEER · ${pointWords(inverted)} · CLICK TO ROLL · HOLD FOR THRUSTERS · SPACE FOR OVERHEAD VIEW · I TO SWAP UP AND DOWN`,
+      }
+let HINTS = hints(game.inverted)
+
+/** Shows the up/down swap on its button and in the hints, and remembers it on this browser. */
+function showInvert() {
+  invertButton.textContent = game.inverted ? 'INVERT: ON' : 'INVERT: OFF'
+  invertButton.setAttribute('aria-pressed', String(game.inverted))
+  HINTS = hints(game.inverted)
+  shownView = '' // the hint is redrawn on the next frame
+  try {
+    localStorage.setItem(SAVED, game.inverted ? '1' : '0')
+  } catch {}
+}
+function toggleInvert() {
+  game.toggleInvert()
+  showInvert()
+}
 
 let pixel = 3 // screen pixels per game pixel
 let image = null
@@ -74,6 +106,7 @@ canvas.addEventListener('pointerleave', (e) => {
 })
 canvas.addEventListener('contextmenu', (e) => e.preventDefault())
 viewButton.addEventListener('click', () => game.nextView())
+invertButton.addEventListener('click', toggleInvert)
 
 // ── keys
 const held = new Set()
@@ -92,6 +125,8 @@ addEventListener('keydown', (e) => {
     if (!e.repeat) game.nextView()
   } else if (e.code === 'KeyE') {
     if (!e.repeat) game.toggleSpread()
+  } else if (e.code === 'KeyI') {
+    if (!e.repeat) toggleInvert()
   } else if (e.code === 'KeyR') {
     if (!e.repeat) game.roll()
   } else {
@@ -111,5 +146,6 @@ addEventListener('blur', () => {
 })
 addEventListener('resize', fit)
 
+showInvert()
 fit()
 requestAnimationFrame(tick)

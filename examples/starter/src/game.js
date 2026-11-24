@@ -109,6 +109,9 @@ export function createGame(options = {}) {
   let altGoal = tune.altitude
   let floor = 0 // the lowest the craft may fly right now
   let climbRate = 0
+  // Inverted controls, as in a plane: pushing up (W, the up arrow, or pointing above the
+  // craft) dives, and pulling down climbs.
+  let inverted = !!options.invert
   let handsOn = false // somebody is steering
   // The view is two numbers: how much of the chase pose and how much of the cockpit pose the
   // camera has. Both at 0 is the overhead view, and anything else is the camera on its way.
@@ -267,11 +270,12 @@ export function createGame(options = {}) {
       want = tune.turnRate * (0.55 * Math.sin(time * 0.37) + 0.35 * Math.sin(time * 0.83 + 2))
       handsOn = false
     }
+    const upward = inverted ? -1 : 1
     if (input.climb !== 0) {
-      altGoal += input.climb * climbMax * dt
+      altGoal += input.climb * upward * climbMax * dt
     } else if (pointing && behind) {
       // from behind: point above the craft to climb, below it to dive
-      const raw = clamp((craftY - input.y) / (fb.height * 0.4), -1, 1)
+      const raw = upward * clamp((craftY - input.y) / (fb.height * 0.4), -1, 1)
       const up = (Math.sign(raw) * Math.max(0, Math.abs(raw) - 0.08)) / 0.92
       altGoal = up >= 0 ? tune.altitude + up * (tune.ceiling - tune.altitude) : tune.altitude + up * (tune.altitude - floor)
     } else if (!handsOn) {
@@ -476,6 +480,14 @@ export function createGame(options = {}) {
       if (craft.spin >= 0) return
       craft.spin = 0
       craft.spinDir = craft.yawRate >= 0 ? 1 : -1
+    },
+    /** swaps up and down on the keys and the pointer, or swaps them back */
+    toggleInvert() {
+      inverted = !inverted
+    },
+    /** true when up and down are swapped, as in a plane */
+    get inverted() {
+      return inverted
     },
     /** steps to the next view: overhead → chase → cockpit → overhead */
     nextView() {
