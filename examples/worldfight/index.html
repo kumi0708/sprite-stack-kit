@@ -85,7 +85,7 @@
     <!-- Opened straight from disk, a browser refuses to load the game's modules and the page stays blank. -->
     <script>
       function needsServer() {
-        document.getElementById('hint').textContent = 'THIS PAGE NEEDS A LOCAL SERVER · IN THE KIT FOLDER RUN "bun scripts/serve.mjs examples/worldfight" AND OPEN THE ADDRESS IT PRINTS'
+        document.getElementById('hint').textContent = 'THIS PAGE NEEDS A LOCAL SERVER · IN THE KIT FOLDER RUN "bun start --game examples/worldfight" AND OPEN THE ADDRESS IT PRINTS'
       }
     </script>
     <script type="module" src="./src/main.js" onerror="needsServer()"></script>

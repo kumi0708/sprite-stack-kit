@@ -73,8 +73,8 @@ writeFileSync('/tmp/fight.png', encodePng(frame.bytes, frame.width, frame.height
 ## 3. Play it in a browser
 
 ```sh
-bun start                              # the starter
-bun scripts/serve.mjs examples/<name>  # another game
+bun start                         # the starter
+bun start --game examples/<name>  # another game
 ```
 
 Open the address it prints. When input, the page or timing changed, try: steering with the pointer in every view, a click, a hold, the keys, Space to go round the views, resizing the window, and a narrow phone-shaped window. Confirm the browser's console has no errors.

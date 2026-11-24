@@ -10,7 +10,7 @@ Bun only. No npm, no lockfile, no dependencies. There is nothing to install or b
 
 | Command | What it does |
 | --- | --- |
-| `bun start` | Serves the starter. For another game: `bun scripts/serve.mjs examples/<name>` |
+| `bun start` | Serves the starter. For another game: `bun start --game examples/<name>` |
 | `bun run check` | Runs a game with no browser and checks what the kit promises |
 | `bun run states` | Tries every order of the steps in the game's `states.js` and checks its rules |
 | `bun run snapshot` | Saves frames to `snapshots/` so you can look at what the game draws |
@@ -19,7 +19,7 @@ Bun only. No npm, no lockfile, no dependencies. There is nothing to install or b
 | `bun run figures` | Redraws `docs/images/` from the starter's code. Never edit those by hand |
 | `bun run fetch-reference` | Downloads Dash's build into `reference/`. Needs the network |
 
-`check`, `states`, `snapshot` and `maps` take `--game examples/<name>`.
+`start`, `check`, `states`, `snapshot` and `maps` take `--game examples/<name>`.
 
 ## What the code does not tell you
 

@@ -3,7 +3,8 @@
 // reference) locally. ES modules do not load from file://, so a game needs to be served.
 //
 //   bun start                                          # the starter, at http://localhost:5173
-//   bun scripts/serve.mjs examples/my-game             # another game
+//   bun start --game examples/my-game                  # another game, like the other commands
+//   bun scripts/serve.mjs examples/my-game             # the same
 //   bun scripts/serve.mjs reference/creativedash-fighter --port 5180
 //
 // It listens on this computer only (127.0.0.1).
@@ -16,8 +17,13 @@ import { fileURLToPath } from 'node:url'
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const args = process.argv.slice(2)
 const portAt = args.indexOf('--port')
+const gameAt = args.indexOf('--game')
 const firstPort = portAt >= 0 ? Number(args[portAt + 1]) : 5173
-const dirArg = args.find((a, i) => !a.startsWith('--') && (portAt < 0 || i !== portAt + 1)) ?? 'examples/starter'
+// --game wins over a bare folder name, so `bun start --game examples/x` serves x
+const dirArg =
+  (gameAt >= 0 ? args[gameAt + 1] : undefined) ??
+  args.find((a, i) => !a.startsWith('--') && (portAt < 0 || i !== portAt + 1) && (gameAt < 0 || i !== gameAt + 1)) ??
+  'examples/starter'
 if (!Number.isInteger(firstPort) || firstPort < 1 || firstPort > 65535) {
   console.error('--port needs a number from 1 to 65535.')
   process.exit(1)

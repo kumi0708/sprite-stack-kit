@@ -9,7 +9,7 @@
     "bun": ">=1.0.0"
   },
   "scripts": {
-    "start": "bun scripts/serve.mjs examples/starter",
+    "start": "bun scripts/serve.mjs",
     "check": "bun scripts/check.mjs",
     "states": "bun scripts/states.mjs",
     "snapshot": "bun scripts/snapshot.mjs",

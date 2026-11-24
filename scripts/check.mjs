@@ -357,6 +357,10 @@ export async function runChecks({ game: folder = 'examples/starter' } = {}) {
     const run = spawnSync(process.execPath, [join(root, 'scripts/serve.mjs'), 'no/such/folder'], { encoding: 'utf8', timeout: 5000 })
     const refused = run.status === 1 && run.stderr.includes('Nothing to serve')
     check('tools: the server serves the folder it is given, and refuses a missing one', refused, run.status === null ? 'it started serving something else' : `exit ${run.status}`)
+    // `bun start --game x` once served the starter, because --game was ignored.
+    const byGame = spawnSync(process.execPath, [join(root, 'scripts/serve.mjs'), 'examples/starter', '--game', 'no/such/folder'], { encoding: 'utf8', timeout: 5000 })
+    const obeyed = byGame.status === 1 && byGame.stderr.includes('Nothing to serve')
+    check('tools: the server serves the game named by --game', obeyed, byGame.status === null ? 'it started serving something else' : `exit ${byGame.status}`)
   }
 
   return results

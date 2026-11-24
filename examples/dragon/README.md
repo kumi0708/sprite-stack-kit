@@ -9,7 +9,7 @@ A reskin of the starter: a red dragon over a desert of dunes, mesas and oases. I
 
 - **Up and down swapped** (`src/game.js`, `src/main.js`): an option that works like a plane's stick, where pulling back climbs. The 上下反転 button or the I key turns it on or off, the browser remembers it, and `?invert=1` or `?invert=0` in the address sets it. It swaps the W/S keys and the pointer's height in the chase and saddle views. `states.js` has a rule that holding the up key climbs, or dives when swapped.
 
-Run it from the repository root with `bun scripts/serve.mjs examples/dragon`.
+Run it from the repository root with `bun start --game examples/dragon`.
 
 ---
 

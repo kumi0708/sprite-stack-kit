@@ -183,7 +183,7 @@ So far you have changed the starter in place. For a game of your own, work in a 
 
 ```sh
 cp -r examples/starter examples/my-game
-bun scripts/serve.mjs examples/my-game
+bun start --game examples/my-game
 bun run check --game examples/my-game
 bun run snapshot --game examples/my-game
 ```

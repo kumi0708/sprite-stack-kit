@@ -101,7 +101,7 @@ bun run views 絵.png
 [Bun](https://bun.sh) を入れてから、このリポジトリのフォルダで次を実行します。
 
 ```sh
-bun scripts/serve.mjs examples/dragon
+bun start --game examples/dragon
 ```
 
 表示されたアドレスをブラウザで開いてください。

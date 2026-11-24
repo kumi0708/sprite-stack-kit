@@ -3,7 +3,7 @@
 Fly a rocket ship over the whole Earth, drop down to the United States and then to San Francisco, where the rocket turns into a fighter plane and dogfights waves of enemy planes over the city. Built with sprite-stack-kit by following its `new-game` playbook, then its `feature` playbook for the plane, the cockpit and the fight.
 
 ```sh
-bun scripts/serve.mjs examples/worldfight
+bun start --game examples/worldfight
 ```
 
 Add `?level=2` to the address to start in the city, `?view=chase` or `?view=cockpit` to start from behind or from the seat, and `?assist` to have missiles leave by themselves once locked (touch screens always do).

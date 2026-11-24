@@ -73,7 +73,7 @@
     <!-- Opened straight from disk, a browser refuses to load the game's modules and the page stays blank. -->
     <script>
       function needsServer() {
-        document.getElementById('hint').textContent = 'このページはローカルサーバーが必要です · キットのフォルダで「bun scripts/serve.mjs examples/dragon」を実行し、表示されたアドレスを開いてください'
+        document.getElementById('hint').textContent = 'このページはローカルサーバーが必要です · キットのフォルダで「bun start --game examples/dragon」を実行し、表示されたアドレスを開いてください'
       }
     </script>
     <script type="module" src="./src/main.js" onerror="needsServer()"></script>
